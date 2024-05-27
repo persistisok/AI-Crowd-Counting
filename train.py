@@ -23,18 +23,23 @@ def save_checkpoint(state, is_best, task_id, filename='checkpoint.pth.tar', save
         shutil.copyfile(checkpoint_path, best_model_path)
 
 
-def load_data(img_path, gt_path, train=True):
-    img = Image.open(img_path).convert('RGB')
+def load_data(rgb_path, tir_path, gt_path, train=True):
+    rgb_img = Image.open(rgb_path).convert('RGB')
+    tir_img = Image.open(tir_path).convert('L')
+    mix_img = Image.new("RGBA", rgb_img.size)
+    mix_img.paste(rgb_img, (0, 0))
+    mix_img.putalpha(tir_img)
     gt_file = h5py.File(gt_path)
     target = np.asarray(gt_file['density'])
     target = cv2.resize(
         target, (target.shape[1]//8, target.shape[0]//8), interpolation=cv2.INTER_CUBIC)*64
-    return img, target
+    return mix_img, target
 
 
 class ImgDataset(Dataset):
     def __init__(self, img_dir, gt_dir, shape=None, shuffle=True, transform=None, train=False, batch_size=1, num_workers=4):
-        self.img_dir = img_dir
+        self.rgb_dir = os.path.join(img_dir, 'rgb')
+        self.tir_dir = os.path.join(img_dir, 'tir')
         self.gt_dir = gt_dir
         self.transform = transform
         self.train = train
@@ -42,24 +47,24 @@ class ImgDataset(Dataset):
         self.batch_size = batch_size
         self.num_workers = num_workers
 
-        self.img_paths = [os.path.join(img_dir, filename) for filename in os.listdir(
-            img_dir) if filename.endswith('.jpg')]
+        self.img_names = list(map(lambda filename: os.path.splitext(filename)[0], os.listdir(self.rgb_dir)))
 
         if shuffle:
-            random.shuffle(self.img_paths)
+            random.shuffle(self.img_names)
 
-        self.nSamples = len(self.img_paths)
+        self.nSamples = len(self.img_names)
 
     def __len__(self):
         return self.nSamples
 
     def __getitem__(self, index):
         assert index <= len(self), 'index range error'
-        img_path = self.img_paths[index]
-        img_name = os.path.basename(img_path)
+        img_name = self.img_names[index]
+        rgb_path = os.path.join(self.rgb_dir, img_name + '.jpg')
+        tir_path = os.path.join(self.tir_dir, img_name + 'R.jpg')
         gt_path = os.path.join(
             self.gt_dir, os.path.splitext(img_name)[0] + '.h5')
-        img, target = load_data(img_path, gt_path, self.train)
+        img, target = load_data(rgb_path, tir_path, gt_path, self.train)
         if self.transform is not None:
             img = self.transform(img)
         return img, target
@@ -76,9 +81,10 @@ scales = [1, 1, 1, 1]
 workers = 4
 seed = time.time()
 print_freq = 30
-img_dir = "./dataset/train/rgb/"
+img_dir = "./dataset/train/"
 gt_dir = "./dataset/train/hdf5s/"
-pre = None
+pre = "./model/checkpoint.pth.tar"
+# pre = None
 task = ""
 
 
@@ -88,7 +94,7 @@ def main():
 
     torch.cuda.manual_seed(seed)
 
-    model = CSRNet()
+    model = CSRNet(load_weights=True)
 
     model = model.cuda()
 
@@ -99,8 +105,10 @@ def main():
                                 weight_decay=decay)
     transform = transforms.Compose([
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[
-                             0.229, 0.224, 0.225]),
+        # transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[
+        #                      0.229, 0.224, 0.225]),
+        transforms.Normalize(mean=[0.485, 0.456, 0.406, 0.449], std=[
+                             0.229, 0.224, 0.225, 0.226]),
     ])
 
     dataset = ImgDataset(
