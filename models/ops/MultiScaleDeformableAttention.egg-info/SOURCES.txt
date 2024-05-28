@@ -1,0 +1,12 @@
+setup.py
+F:/WW/ZL/TransCC_RGBT_V44_2MHSA+6Decoder+4RGBLowInfo/models/ops/src/vision.cpp
+F:/WW/ZL/TransCC_RGBT_V44_2MHSA+6Decoder+4RGBLowInfo/models/ops/src/cpu/ms_deform_attn_cpu.cpp
+F:/WW/ZL/TransCC_RGBT_V44_2MHSA+6Decoder+4RGBLowInfo/models/ops/src/cuda/ms_deform_attn_cuda.cu
+MultiScaleDeformableAttention.egg-info/PKG-INFO
+MultiScaleDeformableAttention.egg-info/SOURCES.txt
+MultiScaleDeformableAttention.egg-info/dependency_links.txt
+MultiScaleDeformableAttention.egg-info/top_level.txt
+functions/__init__.py
+functions/ms_deform_attn_func.py
+modules/__init__.py
+modules/ms_deform_attn.py
