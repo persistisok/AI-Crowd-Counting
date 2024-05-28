@@ -12,6 +12,7 @@ import h5py
 import cv2
 import shutil
 from model import CSRNet
+from model import CANNet
 
 
 def save_checkpoint(state, is_best, task_id, filename='checkpoint.pth.tar', save_dir='./model/'):  # 添加保存目录参数
@@ -62,22 +63,21 @@ class ImgDataset(Dataset):
         img_name = self.img_names[index]
         rgb_path = os.path.join(self.rgb_dir, img_name + '.jpg')
         tir_path = os.path.join(self.tir_dir, img_name + 'R.jpg')
-        gt_path = os.path.join(
-            self.gt_dir, os.path.splitext(img_name)[0] + '.h5')
+        gt_path = os.path.join(self.gt_dir, img_name + '.h5')
         img, target = load_data(rgb_path, tir_path, gt_path, self.train)
         if self.transform is not None:
             img = self.transform(img)
         return img, target
 
 
-lr = 1e-7
+lr = 1e-5
 original_lr = lr
 batch_size = 1
 momentum = 0.95
 decay = 5*1e-4
 epochs = 400
 steps = [-1, 1, 100, 150]
-scales = [1, 1, 1, 1]
+scales = [1, 0.5, 0.2, 0.1]
 workers = 4
 seed = time.time()
 print_freq = 30
@@ -94,7 +94,7 @@ def main():
 
     torch.cuda.manual_seed(seed)
 
-    model = CSRNet(load_weights=True)
+    model = CANNet()
 
     model = model.cuda()
 
@@ -105,8 +105,6 @@ def main():
                                 weight_decay=decay)
     transform = transforms.Compose([
         transforms.ToTensor(),
-        # transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[
-        #                      0.229, 0.224, 0.225]),
         transforms.Normalize(mean=[0.485, 0.456, 0.406, 0.449], std=[
                              0.229, 0.224, 0.225, 0.226]),
     ])

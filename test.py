@@ -2,28 +2,18 @@ import PIL.Image as Image
 import torchvision.transforms.functional as F
 import torch
 from model import CSRNet
+from model import CANNet
 from torchvision import transforms
 from torch.autograd import Variable
 
-test_path = "./dataset/test/rgb/"
-img_paths = [f"{test_path}{i}.jpg" for i in range(1, 1001)]
+test_path = "./dataset/test/"
+rgb_paths = [f"{test_path}rgb/{i}.jpg" for i in range(1, 1001)]
+tir_paths = [f"{test_path}tir/{i}R.jpg" for i in range(1, 1001)]
 
-model = CSRNet()
+model = CANNet(load_weights=True)
 model = model.cuda()
 checkpoint = torch.load('./model/model_best.pth.tar')
 model.load_state_dict(checkpoint['state_dict'])
-
-# for i in range(len(img_paths)):
-#     img = 255.0 * F.to_tensor(Image.open(img_paths[i]).convert('RGB'))
-
-#     img[0, :, :] = img[0, :, :]-92.8207477031
-#     img[1, :, :] = img[1, :, :]-95.2757037428
-#     img[2, :, :] = img[2, :, :]-104.877445883
-#     img = img.cuda()
-#     output = model(img.unsqueeze(0))
-#     ans = output.detach().cpu().sum()
-#     ans = "{:.2f}".format(ans.item())
-#     print(f"{i+1},{ans}")
 
 transform = transforms.Compose([
     transforms.ToTensor(),
@@ -31,8 +21,13 @@ transform = transforms.Compose([
         0.229, 0.224, 0.225, 0.226]),
 ])
 
-for i in range(len(img_paths)):
-    img = transform((Image.open(img_paths[i]).convert('RGB')))
+for i, (rgb_path, tir_path) in enumerate(zip(rgb_paths, tir_paths)):
+    rgb_img = Image.open(rgb_path).convert('RGB')
+    tir_img = Image.open(tir_path).convert('L')
+    mix_img = Image.new("RGBA", rgb_img.size)
+    mix_img.paste(rgb_img, (0, 0))
+    mix_img.putalpha(tir_img)
+    img = transform(mix_img)
     img = img.cuda()
     img = Variable(img)
     output = model(img.unsqueeze(0))
