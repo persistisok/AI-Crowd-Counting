@@ -11,7 +11,7 @@ def generate_data(label_path):
     rgb = cv2.imread(rgb_path)[..., ::-1].copy()
     t = cv2.imread(t_path)[..., ::-1].copy()
     im_h, im_w, _ = rgb.shape
-    print('rgb and t shape', rgb.shape, t.shape)
+    #print('rgb and t shape', rgb.shape, t.shape)
     with open(label_path, 'r') as f:
         label_file = json.load(f)
     points = np.asarray(label_file['points'])
@@ -23,8 +23,8 @@ def generate_data(label_path):
 
 if __name__ == '__main__':
 
-    root_path = ''  # dataset root path
-    save_dir = ''
+    root_path = './dataset-RGBTCC-CVPR2021/'  # dataset root path
+    save_dir = './preprocessed-dataset-RGBTCC-CVPR2021/'
 
     for phase in ['train', 'val', 'test']:
         sub_dir = os.path.join(root_path, phase)

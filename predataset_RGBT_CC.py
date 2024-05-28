@@ -7,30 +7,30 @@ import h5py
 import numpy as np
 import scipy.io as io
 import scipy.spatial
-from scipy.ndimage.filters import gaussian_filter
+from scipy.ndimage import gaussian_filter
 import random
 
 # 先224*224
 '''set your data path'''
-root = 'F:/DataSets/'
+root = './preprocessed-dataset-RGBTCC-CVPR2021/'
 
-rgbt_cc_train = os.path.join(root, 'RGBT-CC-use/train')
-rgbt_cc_test = os.path.join(root, 'RGBT-CC-use/test')
-rgbt_cc_val = os.path.join(root, 'RGBT-CC-use/val')
+rgbt_cc_train = os.path.join(root, 'train')
+rgbt_cc_test = os.path.join(root, 'test')
+rgbt_cc_val = os.path.join(root, 'val')
 
 # 记得与之修改后面的路径
-# path_sets = [rgbt_cc_train]
-path_sets = [rgbt_cc_test]
+path_sets = [rgbt_cc_train]
+# path_sets = [rgbt_cc_test]
 # path_sets = [rgbt_cc_val]
 '''for part A'''
-# if not os.path.exists(rgbt_cc_train.replace('train', 'new_train_224')):
-    # os.makedirs(rgbt_cc_train.replace('train', 'new_trian_224'))
+if not os.path.exists(rgbt_cc_train.replace('train', 'new_train_224')):
+    os.makedirs(rgbt_cc_train.replace('train', 'new_train_224'))
 
-if not os.path.exists(rgbt_cc_test.replace('test', 'new_test_224')):
-    os.makedirs(rgbt_cc_test.replace('test', 'new_test_224'))
-# 
+# if not os.path.exists(rgbt_cc_test.replace('test', 'new_test_224')):
+#     os.makedirs(rgbt_cc_test.replace('test', 'new_test_224'))
+
 # if not os.path.exists(rgbt_cc_val.replace('val', 'new_val_224')):
-    # os.makedirs(rgbt_cc_val.replace('val', 'new_val_224'))
+#     os.makedirs(rgbt_cc_val.replace('val', 'new_val_224'))
 
 img_paths = []
 for path in path_sets:
@@ -60,7 +60,6 @@ for img_path in img_paths:
         T_data = cv2.resize(T_data, (0, 0), fx=rate_1, fy=rate_2)
         Gt_data[:, 0] = Gt_data[:, 0] * rate_1
         Gt_data[:, 1] = Gt_data[:, 1] * rate_2
-        print("1111111")
 
     elif Img_data.shape[0] > Img_data.shape[1]:  # 前面的大
         rate_1 = 672.0 / Img_data.shape[0]
@@ -69,7 +68,6 @@ for img_path in img_paths:
         T_data = cv2.resize(T_data, (0, 0), fx=rate_2, fy=rate_1)
         Gt_data[:, 0] = Gt_data[:, 0] * rate_2 # 对应的坐标进行扩大映射
         Gt_data[:, 1] = Gt_data[:, 1] * rate_1 # 对应的坐标进行扩大映射
-        print("22222")
 
     # kpoint = np.zeros((Img_data.shape[0], Img_data.shape[1]))
     #
@@ -104,8 +102,8 @@ for img_path in img_paths:
 
                 # cv2.imwrite(save_path, crop_img)
     # else: # 训练才需要位置，验证，测试不需要
-    img_path = img_path.replace('test', 'new_test_224')
-    print(img_path)
+    img_path = img_path.replace('train', 'new_train_224')
+    # print(img_path)
     T_path = img_path.replace('_RGB','_T')
     gt_save_path = img_path.replace('_RGB.jpg', '_GT.npy')
     cv2.imwrite(img_path, Img_data)
