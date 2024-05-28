@@ -21,7 +21,7 @@ def parse_args():
     # Net need
     parser.add_argument('--img_size', default=224, type=int, help='network input size')
     parser.add_argument('--pretrained_model',
-                        default=r'F:\Pre_Parameters\pvt_v2_b3.pth', type=str,
+                        default=r'./Pre_Parameters/best_model.pth', type=str,
                         help='load Pretrained model')
     # default
     parser.add_argument('--weight-decay', type=float, default=1e-4,
