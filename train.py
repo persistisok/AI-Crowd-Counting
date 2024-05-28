@@ -13,6 +13,7 @@ import cv2
 import shutil
 from model import CSRNet
 from model import CANNet
+from torchvision.transforms import functional as F
 
 
 def save_checkpoint(state, is_best, task_id, filename='checkpoint.pth.tar', save_dir='./model/'):  # 添加保存目录参数
@@ -34,6 +35,7 @@ def load_data(rgb_path, tir_path, gt_path, train=True):
     target = np.asarray(gt_file['density'])
     target = cv2.resize(
         target, (target.shape[1]//8, target.shape[0]//8), interpolation=cv2.INTER_CUBIC)*64
+    target = torch.tensor(target)
     return mix_img, target
 
 
@@ -65,8 +67,20 @@ class ImgDataset(Dataset):
         tir_path = os.path.join(self.tir_dir, img_name + 'R.jpg')
         gt_path = os.path.join(self.gt_dir, img_name + '.h5')
         img, target = load_data(rgb_path, tir_path, gt_path, self.train)
-        if self.transform is not None:
-            img = self.transform(img)
+        assert self.transform is not None
+        img = self.transform(img)
+        target = target.unsqueeze(0)
+
+        degree = np.random.uniform(-10, 10)
+        img = F.rotate(img, degree)
+        target = F.rotate(target, degree)
+
+        horizontal_flip = bool(np.random.randint(0, 2))
+        if horizontal_flip:
+            img = F.hflip(img)
+            target = F.hflip(target)
+
+        target = target.mean(0)
         return img, target
 
 
