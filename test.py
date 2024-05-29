@@ -21,8 +21,10 @@ args = parser.parse_args()
 if __name__ == '__main__':
 
     datasets = Crowd(os.path.join(args.data_dir, "new_test_224"), method='test')
+    print('datasets', len(datasets))
     dataloader = torch.utils.data.DataLoader(datasets, 1, shuffle=False,
                                              num_workers=0, pin_memory=False)
+    print('dataloader', len(dataloader))
 
     os.environ['CUDA_VISIBLE_DEVICES'] = args.device  # set vis gpu
     device = torch.device('cuda')
@@ -37,11 +39,9 @@ if __name__ == '__main__':
     print('testing...')
     # Iterate over data.
     with open('ans.txt', 'w') as f:
-        game = [0, 0, 0, 0]
-        total_relative_error = 0
-        epoch_res = []
         for idx, (inputs, _, name) in enumerate(dataloader):
             print(idx)
+            print(name) 
             if type(inputs) == list:
                 inputs[0] = inputs[0].to(device)
                 inputs[1] = inputs[1].to(device)
