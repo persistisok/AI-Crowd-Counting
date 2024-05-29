@@ -38,10 +38,9 @@ if __name__ == '__main__':
 
     print('testing...')
     # Iterate over data.
+    result_list = []
     with open('ans.txt', 'w') as f:
         for idx, (inputs, _, name) in enumerate(dataloader):
-            print(idx)
-            print(name) 
             if type(inputs) == list:
                 inputs[0] = inputs[0].to(device)
                 inputs[1] = inputs[1].to(device)
@@ -61,5 +60,9 @@ if __name__ == '__main__':
                 outputs = torch.cat((outputs1, outputs2, outputs3), dim=2)
 
                 res = torch.sum(outputs).item()
-                f.write(name[0] + ',' + str(res) + '\n')
+                result_list.append((int(name[0]), res))
+
+        result_list.sort(key=lambda x: x[0])
+        for name, res in result_list:
+            f.write(f'{name},{res}\n')
             
