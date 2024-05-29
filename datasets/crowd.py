@@ -142,7 +142,8 @@ class Crowd(data.Dataset):
 
             name = os.path.basename(rgb_path).split('_')[0]
             input = [img_return, t_return]
-            return input, None, name
+            target = np.zeros((T.shape[0], T.shape[1]))
+            return input, target, name
         
         else:
             raise Exception("Not implement")
