@@ -268,6 +268,7 @@ class RegTrainer(Trainer):
         logging.info('Epoch {} test, MSE: {:.2f} MAE: {:.2f}, Re: {:.4f},Cost {:.1f} sec'
                          .format(self.epoch, mse, mae, total_relative_error, time.time() - epoch_start))
         model_state_dic = self.model.state_dict()
-        torch.save(model_state_dic, os.path.join(self.save_dir, 'best_model_{}.pth'.format(mae)))
+        # torch.save(model_state_dic, os.path.join(self.save_dir, 'best_model_{}.pth'.format(mae)))
+        torch.save(model_state_dic, os.path.join(self.save_dir, 'best_model.pth'))
 
 
