@@ -113,6 +113,7 @@ class RegTrainer(Trainer):
         epoch_loss = AverageMeter()
         epoch_game = AverageMeter()
         epoch_mse = AverageMeter()
+        epoch_mae = AverageMeter()
         epoch_start = time.time()
         self.model.train()  # Set model to training mode
 
@@ -168,10 +169,11 @@ class RegTrainer(Trainer):
                 pred_err = pred_count - gd_count
                 epoch_loss.update(loss.item(), N)
                 epoch_mse.update(np.mean(pred_err * pred_err), N)
+                epoch_mae.update(np.mean(abs(pred_err)), N)
                 epoch_game.update(np.mean(abs(pred_err)), N)
 
-        logging.info('Epoch {} Train, Loss: {:.2f}, GAME0: {:.2f} MSE: {:.2f}, Cost {:.1f} sec'
-                     .format(self.epoch, epoch_loss.get_avg(), epoch_game.get_avg(), np.sqrt(epoch_mse.get_avg()),
+        logging.info('Epoch {} Train, Loss: {:.2f}, GAME0: {:.2f} MAE: {:.2f} MSE: {:.2f}, Cost {:.1f} sec'
+                     .format(self.epoch, epoch_loss.get_avg(), epoch_game.get_avg(),epoch_mae.get_avg() ,np.sqrt(epoch_mse.get_avg()),
                              time.time()-epoch_start))
         model_state_dic = self.model.state_dict()
         save_path = os.path.join(self.save_dir, '{}_ckpt.tar'.format(self.epoch))
