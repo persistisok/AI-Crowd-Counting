@@ -12,7 +12,7 @@ import random
 
 # 先224*224
 '''set your data path'''
-root = './preprocessed-dataset-RGBTCC-CVPR2021/'
+root = './preprocessed-dataset/'
 
 rgbt_cc_train = os.path.join(root, 'train')
 rgbt_cc_test = os.path.join(root, 'test')
@@ -93,7 +93,6 @@ for img_path in img_paths_test:
 
     T_data = cv2.imread(img_path.replace('_RGB', '_T'))
 
-    Gt_data = np.load(img_path.replace('_RGB.jpg', '_GT.npy'))
     # 448和672
     rate = 1
     rate_1 = 1
@@ -104,23 +103,17 @@ for img_path in img_paths_test:
         rate_2 = 448.0 / Img_data.shape[0]
         Img_data = cv2.resize(Img_data, (0, 0), fx=rate_1, fy=rate_2)
         T_data = cv2.resize(T_data, (0, 0), fx=rate_1, fy=rate_2)
-        Gt_data[:, 0] = Gt_data[:, 0] * rate_1
-        Gt_data[:, 1] = Gt_data[:, 1] * rate_2
 
     elif Img_data.shape[0] > Img_data.shape[1]:  # 前面的大
         rate_1 = 672.0 / Img_data.shape[0]
         rate_2 = 448.0 / Img_data.shape[1]
         Img_data = cv2.resize(Img_data, (0, 0), fx=rate_2, fy=rate_1)
         T_data = cv2.resize(T_data, (0, 0), fx=rate_2, fy=rate_1)
-        Gt_data[:, 0] = Gt_data[:, 0] * rate_2 # 对应的坐标进行扩大映射
-        Gt_data[:, 1] = Gt_data[:, 1] * rate_1 # 对应的坐标进行扩大映射
 
     img_path = img_path.replace('test', 'new_test_224')
     T_path = img_path.replace('_RGB','_T')
-    gt_save_path = img_path.replace('_RGB.jpg', '_GT.npy')
     cv2.imwrite(img_path, Img_data)
     cv2.imwrite(T_path, T_data)
-    np.save(gt_save_path, Gt_data)
 
 for img_path in img_paths_val:
     Img_data = cv2.imread(img_path)

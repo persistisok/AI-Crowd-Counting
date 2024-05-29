@@ -23,8 +23,8 @@ def generate_data(label_path):
 
 if __name__ == '__main__':
 
-    root_path = './dataset-RGBTCC-CVPR2021/'  # dataset root path
-    save_dir = './preprocessed-dataset-RGBTCC-CVPR2021/'
+    root_path = './prepreprocessed-dataset/'  # dataset root path
+    save_dir = './preprocessed-dataset/'
 
     for phase in ['train', 'val', 'test']:
         sub_dir = os.path.join(root_path, phase)
@@ -44,3 +44,15 @@ if __name__ == '__main__':
                 cv2.imwrite(t_save_path, t)
                 gd_save_path = im_save_path.replace('json', 'npy')
                 np.save(gd_save_path, points)
+        else:
+            rgb_list = glob(os.path.join(sub_dir, '*RGB.jpg'))
+            for rgb_path in rgb_list:
+                name = os.path.basename(rgb_path)
+                t_path = rgb_path.replace('RGB', 'T')
+                rgb = cv2.imread(rgb_path)
+                t = cv2.imread(t_path)
+                im_save_path = os.path.join(sub_save_dir, name)
+                rgb_save_path = im_save_path
+                t_save_path = im_save_path.replace('RGB', 'T')
+                cv2.imwrite(rgb_save_path, rgb)
+                cv2.imwrite(t_save_path, t)
