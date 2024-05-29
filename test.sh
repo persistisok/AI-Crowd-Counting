@@ -1,5 +1,5 @@
 python test.py \
     --data-dir ./preprocessed-dataset/ \
-    --save-dir ./output/model/0529-164042 \
+    --save-dir ./Pre_Parameters/ \
     --model "best_model.pth" \
     --device 0
