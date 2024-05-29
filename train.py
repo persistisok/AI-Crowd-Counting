@@ -232,6 +232,7 @@ def validate(model, val_loader):
 def adjust_learning_rate(optimizer, epoch):
     """Sets the learning rate to the initial LR decayed by 10 every 30 epochs"""
 
+    global lr
     lr = original_lr
 
     for i in range(len(steps)):
