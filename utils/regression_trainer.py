@@ -75,7 +75,7 @@ class RegTrainer(Trainer):
                 self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
                 self.start_epoch = checkpoint['epoch'] + 1
             elif suf == 'pth':
-                self.model.load_state_dict(torch.load(args.resume, self.device))
+                self.model.load_state_dict(torch.load(args.resume, self.device),strict=False)
 
         self.ot_loss = OT_Loss(args.crop_size, self.downsample_ratio, args.norm_cood, self.device, args.num_of_iter_in_ot,
                                args.reg)
