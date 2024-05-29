@@ -28,11 +28,11 @@ def parse_args():
                         help='the weight decay')
     parser.add_argument('--max-model-num', type=int, default=1,
                         help='max models num to save ')
-    parser.add_argument('--max-epoch', type=int, default=10,
+    parser.add_argument('--max-epoch', type=int, default=100,
                         help='max training epoch')
     parser.add_argument('--val-epoch', type=int, default=1,
                         help='the num of steps to log training information')
-    parser.add_argument('--val_start', type=int, default=1,
+    parser.add_argument('--val_start', type=int, default=30,
                         help='the epoch start to val')
     parser.add_argument('--save-all-best', type=bool, default=True,
                         help='whether to load opt state')

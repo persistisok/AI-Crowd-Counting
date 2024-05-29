@@ -204,8 +204,6 @@ class RegTrainer(Trainer):
 
             with torch.set_grad_enabled(False):
                 _, outputs, _ = self.model(inputs)
-                print('target', torch.sum(target).item())
-                print('outputs', torch.sum(outputs).item())
                 res = torch.sum(target).item() - torch.sum(outputs).item()
                 epoch_res.append(res)
 
