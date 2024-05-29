@@ -51,6 +51,7 @@ class Crowd(data.Dataset):
         print("init_Crowd dataset")
         self.root_path = root_path
         self.gt_list = sorted(glob(os.path.join(self.root_path, '*.npy')))  # change to npy for gt_list
+        self.rgb_list = sorted(glob(os.path.join(self.root_path, '*RGB.jpg')))
         if method not in ['train', 'val', 'test']:
             raise Exception("not implement")
         self.method = method
@@ -74,7 +75,7 @@ class Crowd(data.Dataset):
         ])
 
     def __len__(self):
-        return len(self.gt_list)
+        return len(self.rgb_list)
 
     def __getitem__(self, item):
         gt_path = self.gt_list[item]
@@ -116,6 +117,11 @@ class Crowd(data.Dataset):
             input = [img_return, t_return]
             return input, target, name
         elif self.method == 'test':
+
+            rgb_path = self.rgb_list[item]
+            t_path = rgb_path.replace('RGB', 'T')
+            RGB = cv2.imread(rgb_path)[..., ::-1].copy()
+            T = cv2.imread(t_path)[..., ::-1].copy()
             RGB = self.RGB_transform(RGB)
             T = self.T_transform(T)
             width, height = RGB.shape[2], RGB.shape[1]
