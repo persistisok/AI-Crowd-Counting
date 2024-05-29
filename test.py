@@ -60,6 +60,7 @@ if __name__ == '__main__':
                 outputs = torch.cat((outputs1, outputs2, outputs3), dim=2)
 
                 res = torch.sum(outputs).item()
+                print(f'{name[0]}: {res}')
                 result_list.append((int(name[0]), res))
 
         result_list.sort(key=lambda x: x[0])

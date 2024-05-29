@@ -58,8 +58,7 @@ class RegTrainer(Trainer):
                                           if x == 'train' else 1),
                                           shuffle=(True if x == 'train' else False),
                                           num_workers=args.num_workers*self.device_count,
-                                          pin_memory=(True if x == 'train' else False),
-                                          multiprocessing_context='spawn')
+                                          pin_memory=(True if x == 'train' else False))
                             for x in ['train', 'val', 'test']}
 
         self.model = ThermalRGBNet(args)
