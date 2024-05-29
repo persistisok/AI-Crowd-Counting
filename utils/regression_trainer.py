@@ -98,8 +98,10 @@ class RegTrainer(Trainer):
             self.epoch = epoch
             self.train_eopch()
             if epoch % args.val_epoch == 0 and epoch >= args.val_start:
-                mae_is_best, mse_is_best = self.val_epoch()
-            if epoch >= args.val_start and (mse_is_best or mae_is_best ):#or (epoch > 200 and epoch % 5 == 0)):
+                # mae_is_best, mse_is_best = self.val_epoch()
+                mae_is_best = self.val_epoch()
+            # if epoch >= args.val_start and (mse_is_best or mae_is_best ):#or (epoch > 200 and epoch % 5 == 0)):
+            if epoch >= args.val_start and mae_is_best:
                 self.test_epoch()
 
     def train_eopch(self):
@@ -212,20 +214,25 @@ class RegTrainer(Trainer):
         mse = np.sqrt(np.mean(np.square(epoch_res)))
         mae = np.mean(np.abs(epoch_res))
         mae_is_best = mae < self.best_mae
-        mse_is_best = 2 * mse < 2 * self.best_mse
+        # mse_is_best = 2 * mse < 2 * self.best_mse
         total_relative_error = total_relative_error / N
         logging.info('Epoch {} Val, MSE: {:.2f} MAE: {:.2f}, Re: {:.4f},Cost {:.1f} sec'
                          .format(self.epoch, mse, mae, total_relative_error, time.time() - epoch_start))
 
         # model_state_dic = self.model.state_dict()
-        if (2.0 * mse + mae) < (2.0 * self.best_mse + self.best_mae):
-            self.best_mse = mse
+        # if (2.0 * mse + mae) < (2.0 * self.best_mse + self.best_mae):
+        #     self.best_mse = mse
+        #     self.best_mae = mae
+        #     logging.info("save best mse {:.2f} mae {:.2f} model epoch {}".format(self.best_mse,
+        #                                                                              self.best_mae,
+        #                                                                              self.epoch))
+        if(mae_is_best):
             self.best_mae = mae
-            logging.info("save best mse {:.2f} mae {:.2f} model epoch {}".format(self.best_mse,
-                                                                                     self.best_mae,
-                                                                                     self.epoch))
+            logging.info("save best mae {:.2f} model epoch {}".format(self.best_mae, self.epoch))
+            logging.info("save best mae {:.2f} mse {:2f} model epoch {}".format(self.best_mae,mse,self.epoch))
 
-        return mae_is_best, mse_is_best
+        # return mae_is_best, mse_is_best
+        return mae_is_best
 
     def test_epoch(self):
         args = self.args
