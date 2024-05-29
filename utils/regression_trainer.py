@@ -188,6 +188,7 @@ class RegTrainer(Trainer):
         total_relative_error = 0
         epoch_res = []
         for inputs, target, name in self.dataloaders['val']:
+            print(len(inputs))
             if type(inputs) == list:
                 inputs[0] = inputs[0].to(self.device)
                 inputs[1] = inputs[1].to(self.device)

@@ -32,7 +32,7 @@ def parse_args():
                         help='max training epoch')
     parser.add_argument('--val-epoch', type=int, default=1,
                         help='the num of steps to log training information')
-    parser.add_argument('--val_start', type=int, default=3,
+    parser.add_argument('--val_start', type=int, default=1,
                         help='the epoch start to val')
     parser.add_argument('--save-all-best', type=bool, default=True,
                         help='whether to load opt state')
