@@ -88,7 +88,7 @@ class Crowd(data.Dataset):
             keypoints = np.load(gt_path)
             return self.train_transform(RGB, T, keypoints)
 
-        elif self.method == 'val' or self.method == 'test':
+        elif self.method == 'val':
             keypoints = np.load(gt_path)
             gt = keypoints
             k = np.zeros((T.shape[0], T.shape[1]))
@@ -115,7 +115,27 @@ class Crowd(data.Dataset):
             name = os.path.basename(gt_path).split('.')[0]
             input = [img_return, t_return]
             return input, target, name
+        elif self.method == 'test':
+            RGB = self.RGB_transform(RGB)
+            T = self.T_transform(T)
+            width, height = RGB.shape[2], RGB.shape[1]
+            m = int(width / 224)
+            n = int(height / 224)
+            for i in range(0, m):
+                for j in range(0, n):
+                    if i == 0 and j == 0:
+                        img_return = RGB[:, j * 224: 224 * (j + 1), i * 224:(i + 1) * 224].cuda().unsqueeze(0)
+                        t_return = T[:, j * 224: 224 * (j + 1), i * 224:(i + 1) * 224].cuda().unsqueeze(0)
+                    else:
+                        crop_img = RGB[:, j * 224: 224 * (j + 1), i * 224:(i + 1) * 224].cuda().unsqueeze(0)
+                        crop_t = T[:, j * 224: 224 * (j + 1), i * 224:(i + 1) * 224].cuda().unsqueeze(0)
+                        img_return = torch.cat([img_return, crop_img], 0).cuda()
+                        t_return = torch.cat([t_return, crop_t], 0).cuda()
 
+            name = os.path.basename(gt_path).split('.')[0]
+            input = [img_return, t_return]
+            return input, None, name
+        
         else:
             raise Exception("Not implement")
 
