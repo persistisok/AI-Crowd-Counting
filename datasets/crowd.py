@@ -78,9 +78,16 @@ class Crowd(data.Dataset):
         return len(self.rgb_list)
 
     def __getitem__(self, item):
-        gt_path = self.gt_list[item]
-        rgb_path = gt_path.replace('GT', 'RGB').replace('npy', 'jpg')
-        t_path = gt_path.replace('GT', 'T').replace('npy', 'jpg')
+        gt_path = None
+        rgb_path =  None
+        t_path = None
+        if len(self.gt_list) > 0:
+            gt_path = self.gt_list[item]
+            rgb_path = gt_path.replace('GT', 'RGB').replace('npy', 'jpg')
+            t_path = gt_path.replace('GT', 'T').replace('npy', 'jpg')
+        else:
+            rgb_path = self.rgb_list[item]
+            t_path = rgb_path.replace('RGB', 'T')
 
         RGB = cv2.imread(rgb_path)[..., ::-1].copy()
         T = cv2.imread(t_path)[..., ::-1].copy()
@@ -117,11 +124,6 @@ class Crowd(data.Dataset):
             input = [img_return, t_return]
             return input, target, name
         elif self.method == 'test':
-
-            rgb_path = self.rgb_list[item]
-            t_path = rgb_path.replace('RGB', 'T')
-            RGB = cv2.imread(rgb_path)[..., ::-1].copy()
-            T = cv2.imread(t_path)[..., ::-1].copy()
             RGB = self.RGB_transform(RGB)
             T = self.T_transform(T)
             width, height = RGB.shape[2], RGB.shape[1]
