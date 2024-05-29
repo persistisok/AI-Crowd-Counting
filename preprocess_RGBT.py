@@ -31,15 +31,16 @@ if __name__ == '__main__':
         sub_save_dir = os.path.join(save_dir, phase)
         if not os.path.exists(sub_save_dir):
             os.makedirs(sub_save_dir)
-        gt_list = glob(os.path.join(sub_dir, '*json'))
-        for gt_path in gt_list:
-            name = os.path.basename(gt_path)
-            # print('name', name)
-            rgb, t, points = generate_data(gt_path)
-            im_save_path = os.path.join(sub_save_dir, name)
-            rgb_save_path = im_save_path.replace('GT', 'RGB').replace('json', 'jpg')
-            t_save_path = im_save_path.replace('GT', 'T').replace('json', 'jpg')
-            cv2.imwrite(rgb_save_path, rgb)
-            cv2.imwrite(t_save_path, t)
-            gd_save_path = im_save_path.replace('json', 'npy')
-            np.save(gd_save_path, points)
+        if(phase != 'test'):
+            gt_list = glob(os.path.join(sub_dir, '*json'))
+            for gt_path in gt_list:
+                name = os.path.basename(gt_path)
+                # print('name', name)
+                rgb, t, points = generate_data(gt_path)
+                im_save_path = os.path.join(sub_save_dir, name)
+                rgb_save_path = im_save_path.replace('GT', 'RGB').replace('json', 'jpg')
+                t_save_path = im_save_path.replace('GT', 'T').replace('json', 'jpg')
+                cv2.imwrite(rgb_save_path, rgb)
+                cv2.imwrite(t_save_path, t)
+                gd_save_path = im_save_path.replace('json', 'npy')
+                np.save(gd_save_path, points)
