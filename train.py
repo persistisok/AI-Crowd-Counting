@@ -13,7 +13,7 @@ def parse_args():
                         help='directory to save models.')
     parser.add_argument('--lr', type=float, default=1e-5,
                         help='the initial learning rate')
-    parser.add_argument('--resume', default=r'',
+    parser.add_argument('--resume', default=r'./Pre_Parameters/best_model.pth',
                         help='the path of resume training model')
     parser.add_argument('--device', default='0', help='assign device')
     parser.add_argument('--crop-size', type=int, default=224,
